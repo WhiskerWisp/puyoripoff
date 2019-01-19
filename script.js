@@ -84,17 +84,20 @@ const adjust_falling_puyo_velocity = velocity => {
 
 const is_within_boundary = direction => {
   // Direction is either 1 for right or -1 for left.
-  const out_of_bound_left = falling_puyo_column == 0 && direction == -1;
+  const left_puyo_column = min(falling_puyo_column, secondary_puyo_column);
+  const out_of_bound_left = left_puyo_column == 0 && direction == -1;
+
+  const right_puyo_column = max(falling_puyo_column, secondary_puyo_column);
   const out_of_bound_right =
-    falling_puyo_column + direction == number_of_columns;
+    right_puyo_column + direction == number_of_columns;
+
   if (out_of_bound_left || out_of_bound_right) {
     return false;
   }
 
   const neighbor_row = game_height_map[falling_puyo_column + direction];
   const neighbor_y = neighbor_row * puyo_sprite_width;
-  const current_y = falling_puyo.y;
-  if (neighbor_y < current_y) {
+  if (neighbor_y < falling_puyo.y || neighbor_y < secondary_puyo.y) {
     return false;
   }
 
