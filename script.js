@@ -31,6 +31,9 @@ const game = new Phaser.Game(config);
 let cursors;
 let falling_puyo;
 let falling_puyo_column;
+let secondary_puyo;
+let secondary_puyo_column;
+let num_puyos_in_control = 0; // To track if one puyo has already landed.
 let last_left_right_pressed = 0; // To prevent overly quick repeats.
 const game_state_matrix = new Array(6).fill(new Array(12).fill(null)); // Column then row.
 const game_height_map = new Array(6).fill(11); // Largest index with no puyos.
@@ -41,15 +44,27 @@ const generateRandomColor = () => {
 };
 
 const spawn_new_puyo = scene => {
+  num_puyos_in_control = 2;
   falling_puyo_column = default_puyo_spawn_column;
+  secondary_puyo_column = default_puyo_spawn_column;
 
   const puyo_color = generateRandomColor();
+  const secondary_puyo_color = generateRandomColor();
 
   const new_puyo_x = compute_falling_puyo_x();
   falling_puyo = scene.physics.add.sprite(new_puyo_x, 0, "puyos", puyo_color);
   falling_puyo.color = puyo_color;
   falling_puyo.setOrigin(0, 0);
+  secondary_puyo = scene.physics.add.sprite(
+    new_puyo_x,
+    -1 * puyo_sprite_width,
+    "puyos",
+    secondary_puyo_color,
+  );
+  secondary_puyo.color = secondary_puyo_color;
+  secondary_puyo.setOrigin(0, 0);
   falling_puyo.setVelocityY(puyo_fall_velocity);
+  secondary_puyo.setVelocityY(puyo_fall_velocity);
 };
 
 const compute_falling_puyo_x = () => puyo_sprite_width * falling_puyo_column;
@@ -61,6 +76,9 @@ const shift_falling_puyo = direction => {
 
 const adjust_falling_puyo_velocity = velocity => {
   falling_puyo.setVelocityY(velocity);
+  if (num_puyos_in_control == 2) {
+    secondary_puyo.setVelocityY(velocity);
+  }
 };
 
 const is_within_boundary = direction => {
