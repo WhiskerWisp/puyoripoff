@@ -31,10 +31,24 @@ let falling_puyo_column;
 
 const spawn_new_puyo = scene => {
   falling_puyo_column = default_puyo_spawn_column;
-  const new_puyo_x = puyo_sprite_width * default_puyo_spawn_column;
+  const new_puyo_x = compute_falling_puyo_x();
   falling_puyo = scene.physics.add.sprite(new_puyo_x, 0, "puyos", 0);
   falling_puyo.setOrigin(0, 0);
   falling_puyo.setVelocityY(puyo_fall_velocity);
+};
+
+const compute_falling_puyo_x = () => puyo_sprite_width * falling_puyo_column;
+
+const shift_falling_puyo = direction => {
+  // Direction is either 1 for right or -1 for left.
+  const out_of_bound_left = falling_puyo_column == 0 && direction == -1;
+  const out_of_bound_right =
+    falling_puyo_column + direction == number_of_columns;
+  if (out_of_bound_left || out_of_bound_right) {
+    return;
+  }
+  falling_puyo_column += direction;
+  falling_puyo.x = compute_falling_puyo_x();
 };
 
 function preload() {
@@ -51,6 +65,6 @@ function create() {
 
 function update() {
   if (cursors.left.isDown) {
-    // TODO
+    shift_falling_puyo(-1);
   }
 }
