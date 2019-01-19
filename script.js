@@ -28,6 +28,7 @@ const game = new Phaser.Game(config);
 let cursors;
 let falling_puyo;
 let falling_puyo_column;
+let last_left_right_pressed = 0; // To prevent overly quick repeats.
 
 const spawn_new_puyo = scene => {
   falling_puyo_column = default_puyo_spawn_column;
@@ -62,8 +63,6 @@ function create() {
   cursors = this.input.keyboard.createCursorKeys();
   spawn_new_puyo(this);
 }
-
-let last_left_right_pressed = 0;
 
 function update() {
   const current_time = new Phaser.Time.Clock(this).now;
