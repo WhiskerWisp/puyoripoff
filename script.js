@@ -33,6 +33,7 @@ const spawn_new_puyo = scene => {
   falling_puyo_column = default_puyo_spawn_column;
   const new_puyo_x = puyo_sprite_width * default_puyo_spawn_column;
   falling_puyo = scene.physics.add.sprite(new_puyo_x, 0, "puyos", 0);
+  falling_puyo.setOrigin(0, 0);
   falling_puyo.setVelocityY(puyo_fall_velocity);
 };
 
@@ -50,5 +51,6 @@ function create() {
 
 function update() {
   if (cursors.left.isDown) {
+    // TODO
   }
 }
