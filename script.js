@@ -153,7 +153,8 @@ const update_control = scene => {
   // Collision detection for secondary puyo.
   destination_row = game_height_map[secondary_puyo_column];
   destination_y = destination_row * puyo_sprite_width;
-  if (secondary_puyo.y >= destination_y) {
+  // We force game_state to be in CONTROL to prevent double-collision from happening.
+  if (game_state == "CONTROL" && secondary_puyo.y >= destination_y) {
     // Collision detected.
     secondary_puyo.setVelocityY(0);
     secondary_puyo.y = destination_y;
