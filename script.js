@@ -45,19 +45,31 @@ const spawn_new_puyo = scene => {
 const compute_falling_puyo_x = () => puyo_sprite_width * falling_puyo_column;
 
 const shift_falling_puyo = direction => {
-  // Direction is either 1 for right or -1 for left.
-  const out_of_bound_left = falling_puyo_column == 0 && direction == -1;
-  const out_of_bound_right =
-    falling_puyo_column + direction == number_of_columns;
-  if (out_of_bound_left || out_of_bound_right) {
-    return;
-  }
   falling_puyo_column += direction;
   falling_puyo.x = compute_falling_puyo_x();
 };
 
 const adjust_falling_puyo_velocity = velocity => {
   falling_puyo.setVelocityY(velocity);
+};
+
+const is_within_boundary = direction => {
+  // Direction is either 1 for right or -1 for left.
+  const out_of_bound_left = falling_puyo_column == 0 && direction == -1;
+  const out_of_bound_right =
+    falling_puyo_column + direction == number_of_columns;
+  if (out_of_bound_left || out_of_bound_right) {
+    return false;
+  }
+
+  const neighbor_row = game_height_map[falling_puyo_column + direction];
+  const neighbor_y = neighbor_row * puyo_sprite_width;
+  const current_y = falling_puyo.y;
+  if (neighbor_y < current_y) {
+    return false;
+  }
+
+  return true;
 };
 
 function preload() {
@@ -79,10 +91,10 @@ function update() {
 
   // Left and right shifting.
   const okay_to_shift = current_time - last_left_right_pressed >= 100; // TODO: Remove magic number
-  if (cursors.left.isDown && okay_to_shift) {
+  if (cursors.left.isDown && okay_to_shift && is_within_boundary(-1)) {
     shift_falling_puyo(-1);
     last_left_right_pressed = current_time;
-  } else if (cursors.right.isDown && okay_to_shift) {
+  } else if (cursors.right.isDown && okay_to_shift && is_within_boundary(1)) {
     shift_falling_puyo(1);
     last_left_right_pressed = current_time;
   }
