@@ -84,10 +84,10 @@ const adjust_falling_puyo_velocity = velocity => {
 
 const is_within_boundary = direction => {
   // Direction is either 1 for right or -1 for left.
-  const left_puyo_column = min(falling_puyo_column, secondary_puyo_column);
+  const left_puyo_column = Math.min(falling_puyo_column, secondary_puyo_column);
   const out_of_bound_left = left_puyo_column == 0 && direction == -1;
 
-  const right_puyo_column = max(falling_puyo_column, secondary_puyo_column);
+  const right_puyo_column = Math.max(falling_puyo_column, secondary_puyo_column);
   const out_of_bound_right =
     right_puyo_column + direction == number_of_columns;
 
