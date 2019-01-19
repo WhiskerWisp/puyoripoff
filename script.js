@@ -3,6 +3,7 @@ const number_of_columns = 6;
 const number_of_rows = 12;
 const puyo_sprite_width = 30; // Square so same height.
 const default_puyo_spawn_column = 2; // Third column.
+const game_over_column = default_puyo_spawn_column;
 const puyo_fall_velocity = 80;
 const puyo_fall_high_velocity = 500;
 const number_of_puyo_animation_frames = 3;
@@ -33,7 +34,7 @@ let falling_puyo;
 let falling_puyo_column;
 let secondary_puyo;
 let secondary_puyo_column;
-let num_puyos_in_control = 0; // To track if one puyo has already landed.
+let game_state = ""; // CONTROL or FALLING.
 let last_left_right_pressed = 0; // To prevent overly quick repeats.
 const game_state_matrix = new Array(6).fill(new Array(12).fill(null)); // Column then row.
 const game_height_map = new Array(6).fill(11); // Largest index with no puyos.
@@ -44,7 +45,6 @@ const generateRandomColor = () => {
 };
 
 const spawn_new_puyo = scene => {
-  num_puyos_in_control = 2;
   falling_puyo_column = default_puyo_spawn_column;
   secondary_puyo_column = default_puyo_spawn_column;
 
@@ -76,9 +76,7 @@ const shift_falling_puyo = direction => {
 
 const adjust_falling_puyo_velocity = velocity => {
   falling_puyo.setVelocityY(velocity);
-  if (num_puyos_in_control == 2) {
-    secondary_puyo.setVelocityY(velocity);
-  }
+  secondary_puyo.setVelocityY(velocity);
 };
 
 const is_within_boundary = direction => {
@@ -111,11 +109,12 @@ function preload() {
 function create() {
   cursors = this.input.keyboard.createCursorKeys();
   this.add.image(...game_over_grid_coord, "game_over_grid");
+  game_state = "CONTROL";
   spawn_new_puyo(this);
 }
 
-function update() {
-  const current_time = new Phaser.Time.Clock(this).now;
+const update_control = scene => {
+  const current_time = new Phaser.Time.Clock(scene).now;
 
   // Left and right shifting.
   const okay_to_shift = current_time - last_left_right_pressed >= 100; // TODO: Remove magic number
@@ -133,15 +132,61 @@ function update() {
     adjust_falling_puyo_velocity(puyo_fall_velocity);
   }
 
-  // Collision detection.
-  const destination_row = game_height_map[falling_puyo_column];
-  const destination_y = destination_row * puyo_sprite_width;
+  // Collision detection for primary puyo.
+  let destination_row = game_height_map[falling_puyo_column];
+  let destination_y = destination_row * puyo_sprite_width;
   if (falling_puyo.y >= destination_y) {
     // Collision detected.
     falling_puyo.setVelocityY(0);
     falling_puyo.y = destination_y;
     game_state_matrix[falling_puyo_column][destination_row] = falling_puyo;
     game_height_map[falling_puyo_column] -= 1;
-    spawn_new_puyo(this);
+    // Check if game is lost.
+    if (game_height_map[game_over_column] <= 0) {
+      // TODO
+    }
+    game_state = "FALLING";
+    falling_puyo = secondary_puyo;
+    falling_puyo_column = secondary_puyo_column;
   }
+
+  // Collision detection for secondary puyo.
+  destination_row = game_height_map[secondary_puyo_column];
+  destination_y = destination_row * puyo_sprite_width;
+  if (secondary_puyo.y >= destination_y) {
+    // Collision detected.
+    secondary_puyo.setVelocityY(0);
+    secondary_puyo.y = destination_y;
+    game_state_matrix[secondary_puyo_column][destination_row] = secondary_puyo;
+    game_height_map[secondary_puyo_column] -= 1;
+    // Check if game is lost.
+    if (game_height_map[game_over_column] <= 0) {
+      // TODO
+    }
+    game_state = "FALLING";
+  }
+};
+
+const update_falling = scene => {
+  falling_puyo.setVelocityY(puyo_fall_high_velocity);
+  // Collision detection for primary puyo.
+  let destination_row = game_height_map[falling_puyo_column];
+  let destination_y = destination_row * puyo_sprite_width;
+  if (falling_puyo.y >= destination_y) {
+    // Collision detected.
+    falling_puyo.setVelocityY(0);
+    falling_puyo.y = destination_y;
+    game_state_matrix[falling_puyo_column][destination_row] = falling_puyo;
+    game_height_map[falling_puyo_column] -= 1;
+    // Check if game is lost.
+    if (game_height_map[game_over_column] <= 0) {
+      // TODO
+    }
+    game_state = "CONTROL";
+    spawn_new_puyo(scene);
+  }
+};
+
+function update() {
+  game_state == "CONTROL" ? update_control(this) : update_falling(this);
 }
