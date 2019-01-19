@@ -68,10 +68,13 @@ const spawn_new_puyo = scene => {
 };
 
 const compute_falling_puyo_x = () => puyo_sprite_width * falling_puyo_column;
+const compute_secondary_puyo_x = () => puyo_sprite_width * secondary_puyo_column;
 
 const shift_falling_puyo = direction => {
   falling_puyo_column += direction;
+  secondary_puyo_column += direction;
   falling_puyo.x = compute_falling_puyo_x();
+  secondary_puyo.x = compute_secondary_puyo_x();
 };
 
 const adjust_falling_puyo_velocity = velocity => {
