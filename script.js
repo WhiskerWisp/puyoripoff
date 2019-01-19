@@ -4,6 +4,7 @@ const number_of_rows = 12;
 const puyo_sprite_width = 30; // Square so same height.
 const default_puyo_spawn_column = 2; // Third column.
 const puyo_fall_velocity = 80;
+const puyo_fall_high_velocity = 500;
 const game_over_grid_coord = [75, 15];
 
 var config = {
@@ -54,6 +55,10 @@ const shift_falling_puyo = direction => {
   falling_puyo.x = compute_falling_puyo_x();
 };
 
+const adjust_falling_puyo_velocity = (velocity) => {
+  falling_puyo.setVelocityY(velocity);
+};
+
 function preload() {
   this.load.image("game_over_grid", "assets/cross.png");
   this.load.spritesheet("puyos", "assets/bubble_spritesheet.png", {
@@ -78,5 +83,12 @@ function update() {
   } else if (cursors.right.isDown && okay_to_shift) {
     shift_falling_puyo(1);
     last_left_right_pressed = current_time;
+  }
+
+  if (cursors.down.isDown) {
+    adjust_falling_puyo_velocity(puyo_fall_high_velocity);
+  }
+  else {
+    adjust_falling_puyo_velocity(puyo_fall_velocity);
   }
 }
