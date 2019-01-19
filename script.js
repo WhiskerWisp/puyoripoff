@@ -63,8 +63,17 @@ function create() {
   spawn_new_puyo(this);
 }
 
+let last_left_right_pressed = 0;
+
 function update() {
-  if (cursors.left.isDown) {
+  const current_time = new Phaser.Time.Clock(this).now;
+
+  const okay_to_shift = current_time - last_left_right_pressed >= 100; // TODO: Remove magic number
+  if (cursors.left.isDown && okay_to_shift) {
     shift_falling_puyo(-1);
+    last_left_right_pressed = current_time;
+  } else if (cursors.right.isDown && okay_to_shift) {
+    shift_falling_puyo(1);
+    last_left_right_pressed = current_time;
   }
 }
