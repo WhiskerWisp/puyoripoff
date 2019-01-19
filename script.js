@@ -97,7 +97,11 @@ function update() {
   const destination_row = game_height_map[falling_puyo_column];
   const destination_y = destination_row * puyo_sprite_width;
   if (falling_puyo.y >= destination_y) {
+    // Collision detected.
     falling_puyo.setVelocityY(0);
     falling_puyo.y = destination_y;
+    game_state_matrix[falling_puyo_column][destination_row] = falling_puyo;
+    game_height_map[falling_puyo_column] -= 1;
+    spawn_new_puyo(this);
   }
 }
