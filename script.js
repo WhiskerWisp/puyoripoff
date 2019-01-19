@@ -4,6 +4,7 @@ const number_of_rows = 12;
 const puyo_sprite_width = 30; // Square so same height.
 const default_puyo_spawn_column = 2; // Third column.
 const puyo_fall_velocity = 80;
+const game_over_grid_coord = [75, 15];
 
 var config = {
   type: Phaser.AUTO,
@@ -53,6 +54,7 @@ const shift_falling_puyo = direction => {
 };
 
 function preload() {
+  this.load.image('game_over_grid', 'assets/cross.png');
   this.load.spritesheet("puyos", "assets/bubble_spritesheet.png", {
     frameWidth: puyo_sprite_width,
     frameHeight: puyo_sprite_width,
@@ -61,6 +63,7 @@ function preload() {
 
 function create() {
   cursors = this.input.keyboard.createCursorKeys();
+  this.add.image(...game_over_grid_coord, 'game_over_grid');
   spawn_new_puyo(this);
 }
 
