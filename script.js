@@ -1,6 +1,9 @@
+// Game-wide constants.
 const number_of_columns = 6;
 const number_of_rows = 12;
 const puyo_sprite_width = 30; // Square so same height.
+const default_puyo_spawn_column = 2; // Third column.
+const puyo_fall_velocity = 80;
 
 var config = {
   type: Phaser.AUTO,
@@ -20,7 +23,18 @@ var config = {
   },
 };
 
+// Game-specific dynamic variables.
 const game = new Phaser.Game(config);
+let cursors;
+let falling_puyo;
+let falling_puyo_column;
+
+const spawn_new_puyo = scene => {
+  falling_puyo_column = default_puyo_spawn_column;
+  const new_puyo_x = puyo_sprite_width * default_puyo_spawn_column;
+  falling_puyo = scene.physics.add.sprite(new_puyo_x, 0, "puyos", 0);
+  falling_puyo.setVelocityY(puyo_fall_velocity);
+};
 
 function preload() {
   this.load.spritesheet("puyos", "assets/bubble_spritesheet.png", {
@@ -30,8 +44,11 @@ function preload() {
 }
 
 function create() {
-  let puyo = this.physics.add.sprite(90, 175, "puyos", 0);
-  puyo.setVelocityY(80);
+  cursors = this.input.keyboard.createCursorKeys();
+  spawn_new_puyo(this);
 }
 
-function update() {}
+function update() {
+  if (cursors.left.isDown) {
+  }
+}
