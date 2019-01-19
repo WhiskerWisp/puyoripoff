@@ -32,6 +32,7 @@ let falling_puyo;
 let falling_puyo_column;
 let last_left_right_pressed = 0; // To prevent overly quick repeats.
 const game_state_matrix = new Array(6).fill(new Array(12).fill(null)); // Column then row.
+const game_height_map = new Array(6).fill(11); // Largest index with no puyos.
 
 const spawn_new_puyo = scene => {
   falling_puyo_column = default_puyo_spawn_column;
@@ -55,7 +56,7 @@ const shift_falling_puyo = direction => {
   falling_puyo.x = compute_falling_puyo_x();
 };
 
-const adjust_falling_puyo_velocity = (velocity) => {
+const adjust_falling_puyo_velocity = velocity => {
   falling_puyo.setVelocityY(velocity);
 };
 
@@ -76,6 +77,7 @@ function create() {
 function update() {
   const current_time = new Phaser.Time.Clock(this).now;
 
+  // Left and right shifting.
   const okay_to_shift = current_time - last_left_right_pressed >= 100; // TODO: Remove magic number
   if (cursors.left.isDown && okay_to_shift) {
     shift_falling_puyo(-1);
@@ -87,8 +89,15 @@ function update() {
 
   if (cursors.down.isDown) {
     adjust_falling_puyo_velocity(puyo_fall_high_velocity);
-  }
-  else {
+  } else {
     adjust_falling_puyo_velocity(puyo_fall_velocity);
+  }
+
+  // Collision detection.
+  const destination_row = game_height_map[falling_puyo_column];
+  const destination_y = destination_row * puyo_sprite_width;
+  if (falling_puyo.y >= destination_y) {
+    falling_puyo.setVelocityY(0);
+    falling_puyo.y = destination_y;
   }
 }
