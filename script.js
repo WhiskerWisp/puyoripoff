@@ -1,4 +1,5 @@
 // Game-wide constants.
+let secondary_puyo_orientations = ["TOP", "RIGHT", "BOTTOM", "LEFT"];
 const number_of_columns = 6;
 const number_of_rows = 12;
 const puyo_sprite_width = 30; // Square so same height.
@@ -8,6 +9,7 @@ const puyo_fall_velocity = 80;
 const puyo_fall_high_velocity = 500;
 const number_of_puyo_animation_frames = 3;
 const game_over_grid_coord = [75, 15];
+const puyo_rotate_key_repeat_delay = 400;
 
 var config = {
   type: Phaser.AUTO,
@@ -36,6 +38,7 @@ let falling_puyo;
 let falling_puyo_column;
 let secondary_puyo;
 let secondary_puyo_column;
+let secondary_puyo_orientation_index;
 let game_state = ""; // CONTROL or FALLING.
 let last_left_right_pressed = 0; // To prevent overly quick repeats.
 const game_state_matrix = new Array(6).fill(new Array(12).fill(null)); // Column then row.
@@ -49,6 +52,7 @@ const generateRandomColor = () => {
 const spawn_new_puyo = scene => {
   falling_puyo_column = default_puyo_spawn_column;
   secondary_puyo_column = default_puyo_spawn_column;
+  secondary_puyo_orientation_index = 0;
 
   const puyo_color = generateRandomColor();
   const secondary_puyo_color = generateRandomColor();
@@ -143,6 +147,25 @@ const update_control = scene => {
     adjust_falling_puyo_velocity(puyo_fall_high_velocity);
   } else {
     adjust_falling_puyo_velocity(puyo_fall_velocity);
+  }
+
+  // Rotation.
+  if (
+    scene.input.keyboard.checkDown(
+      rotate_clockwise,
+      puyo_rotate_key_repeat_delay,
+    )
+  ) {
+    // Check if able to rotate.
+    // Do the rotation.
+  } else if (
+    scene.input.keyboard.checkDown(
+      rotate_anticlockwise,
+      puyo_rotate_key_repeat_delay,
+    )
+  ) {
+    // Check if able to rotate.
+    // Do the rotation.
   }
 
   // Collision detection for primary puyo.
