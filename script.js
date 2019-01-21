@@ -77,6 +77,8 @@ const compute_falling_puyo_x = () => puyo_sprite_width * falling_puyo_column;
 const compute_secondary_puyo_x = () =>
   puyo_sprite_width * secondary_puyo_column;
 
+const get_orientation = index => secondary_puyo_orientations[index];
+
 const shift_falling_puyo = direction => {
   falling_puyo_column += direction;
   secondary_puyo_column += direction;
@@ -111,6 +113,47 @@ const is_within_boundary = direction => {
   }
 
   return true;
+};
+
+const compute_puyo_rotation_orientation_index = direction => {
+  // Direction is 1 for clockwise, or -1 for anticlockwise.
+  // Rotation is always possible, regardless of whether
+  // there are walls blocking the way. It just means that
+  // it has to rotate 180 degrees.
+
+  let destination_orientation_index =
+    (secondary_puyo_orientation_index + direction) % 4;
+  const destination_orientation = get_orientation(
+    destination_orientation_index,
+  );
+  const destination_column =
+    destination_orientation_index % 2 == 0
+      ? falling_puyo_column
+      : destination_orientation_index == 1
+        ? falling_puyo_column + 1
+        : falling_puyo_column - 1;
+
+  // If secondary puyo is already at the left or right, then
+  // rotating it will definitely be doable.
+  if (secondary_puyo_orientation_index % 2 == 1) {
+    // An odd index means LEFT or RIGHT.
+    return destination_orientation_index;
+  }
+
+  // Orientation is TOP or BOTTOM. Check if destination
+  // clashes with a wall.
+  const clashes_with_boundary =
+    destination_column < 0 || destination_column >= number_of_columns;
+
+  let potential_wall_row = game_height_map[destination_column];
+  let wall_y = potential_wall_row * puyo_sprite_width;
+
+  // We use falling_puyo's y instead of secondary puyo's because
+  // the destination location is horizontally aligned with
+  // the primary puyo.
+  if (falling_puyo.y > wall_y) {
+    // There is a wall in the way. Make this a 180 degree rotation.
+  }
 };
 
 function preload() {
