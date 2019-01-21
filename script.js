@@ -68,7 +68,8 @@ const spawn_new_puyo = scene => {
 };
 
 const compute_falling_puyo_x = () => puyo_sprite_width * falling_puyo_column;
-const compute_secondary_puyo_x = () => puyo_sprite_width * secondary_puyo_column;
+const compute_secondary_puyo_x = () =>
+  puyo_sprite_width * secondary_puyo_column;
 
 const shift_falling_puyo = direction => {
   falling_puyo_column += direction;
@@ -87,9 +88,11 @@ const is_within_boundary = direction => {
   const left_puyo_column = Math.min(falling_puyo_column, secondary_puyo_column);
   const out_of_bound_left = left_puyo_column == 0 && direction == -1;
 
-  const right_puyo_column = Math.max(falling_puyo_column, secondary_puyo_column);
-  const out_of_bound_right =
-    right_puyo_column + direction == number_of_columns;
+  const right_puyo_column = Math.max(
+    falling_puyo_column,
+    secondary_puyo_column,
+  );
+  const out_of_bound_right = right_puyo_column + direction == number_of_columns;
 
   if (out_of_bound_left || out_of_bound_right) {
     return false;
