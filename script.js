@@ -30,6 +30,8 @@ var config = {
 // Game-specific dynamic variables.
 const game = new Phaser.Game(config);
 let cursors;
+let rotate_clockwise = Phaser.Input.Keyboard.KeyCodes.X;
+let rotate_anticlockwise = Phaser.Input.Keyboard.KeyCodes.Z;
 let falling_puyo;
 let falling_puyo_column;
 let secondary_puyo;
@@ -117,6 +119,8 @@ function preload() {
 
 function create() {
   cursors = this.input.keyboard.createCursorKeys();
+  rotate_clockwise = this.input.keyboard.addKey(rotate_clockwise);
+  rotate_anticlockwise = this.input.keyboard.addKey(rotate_anticlockwise);
   this.add.image(...game_over_grid_coord, "game_over_grid");
   game_state = "CONTROL";
   spawn_new_puyo(this);
