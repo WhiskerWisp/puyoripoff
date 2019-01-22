@@ -77,6 +77,41 @@ const compute_falling_puyo_x = () => puyo_sprite_width * falling_puyo_column;
 const compute_secondary_puyo_x = () =>
   puyo_sprite_width * secondary_puyo_column;
 
+const compute_secondary_puyo_rotated_x = (index, primary_x) => {
+  const orientation = get_orientation(index);
+  if (orientation == "TOP" || orientation == "BOTTOM") {
+    // No change in x coordinates if top or bottom.
+    return primary_x;
+  }
+  const multiplier = orientation == "LEFT" ? -1 : 1;
+  return primary_x + multiplier * puyo_sprite_width;
+};
+
+const compute_secondary_puyo_rotated_y = (index, primary_y) => {
+  const orientation = get_orientation(index);
+
+  if (orientation == "LEFT" || orientation == "RIGHT") {
+    // No change in x coordinates if left or right.
+    return primary_y;
+  }
+
+  const multiplier = orientation == "TOP" ? -1 : 1;
+  return primary_y + multiplier * puyo_sprite_width;
+};
+
+const compute_secondary_puyo_column = (
+  primary_column,
+  secondary_orientation_index,
+) => {
+  const secondary_orientation = get_orientation(secondary_orientation_index);
+  if (secondary_orientation == "TOP" || secondary_orientation == "BOTTOM") {
+    return primary_column;
+  }
+  return secondary_orientation == "LEFT"
+    ? primary_column - 1
+    : primary_column + 1;
+};
+
 const get_orientation = index => secondary_puyo_orientations[index];
 
 const shift_falling_puyo = direction => {
@@ -123,6 +158,13 @@ const compute_puyo_rotation_orientation_index = direction => {
 
   let destination_orientation_index =
     (secondary_puyo_orientation_index + direction) % 4;
+
+  // To account for negative numbers.
+  destination_orientation_index =
+    destination_orientation_index >= 0
+      ? destination_orientation_index
+      : 4 + destination_orientation_index; // Plus used cus index is negative.
+
   const destination_orientation = get_orientation(
     destination_orientation_index,
   );
@@ -153,7 +195,15 @@ const compute_puyo_rotation_orientation_index = direction => {
   // the primary puyo.
   if (falling_puyo.y > wall_y) {
     // There is a wall in the way. Make this a 180 degree rotation.
+    destination_orientation_index =
+      (destination_puyo_orientation_index + direction) % 4;
+
+    destination_orientation_index =
+      destination_orientation_index >= 0
+        ? destination_orientation_index
+        : 4 - destination_orientation_index;
   }
+  return destination_orientation_index;
 };
 
 function preload() {
@@ -199,16 +249,49 @@ const update_control = scene => {
       puyo_rotate_key_repeat_delay,
     )
   ) {
-    // Check if able to rotate.
+    // Clockwise rotation requested.
+    secondary_puyo_orientation_index = compute_puyo_rotation_orientation_index(
+      1,
+    );
+    secondary_puyo_column = compute_secondary_puyo_column(
+      falling_puyo_column,
+      secondary_puyo_orientation_index,
+    );
     // Do the rotation.
+    secondary_puyo.x = compute_secondary_puyo_rotated_x(
+      secondary_puyo_orientation_index,
+      falling_puyo.x,
+    );
+    secondary_puyo.y = compute_secondary_puyo_rotated_y(
+      secondary_puyo_orientation_index,
+      falling_puyo.y,
+    );
+    // TODO: There is a chance that the rotation can bring the puyo to the
+    // bottom and it might collide with the bottom ground ahead.
   } else if (
     scene.input.keyboard.checkDown(
       rotate_anticlockwise,
       puyo_rotate_key_repeat_delay,
     )
   ) {
-    // Check if able to rotate.
+    // Anticlockwise rotation requested.
+    secondary_puyo_orientation_index = compute_puyo_rotation_orientation_index(
+      -1,
+    );
+    secondary_puyo_column = compute_secondary_puyo_column(
+      falling_puyo_column,
+      secondary_puyo_orientation_index,
+    );
+
     // Do the rotation.
+    secondary_puyo.x = compute_secondary_puyo_rotated_x(
+      secondary_puyo_orientation_index,
+      falling_puyo.x,
+    );
+    secondary_puyo.y = compute_secondary_puyo_rotated_y(
+      secondary_puyo_orientation_index,
+      falling_puyo.y,
+    );
   }
 
   // Collision detection for primary puyo.
