@@ -193,7 +193,7 @@ const compute_puyo_rotation_orientation_index = direction => {
   // We use falling_puyo's y instead of secondary puyo's because
   // the destination location is horizontally aligned with
   // the primary puyo.
-  if (falling_puyo.y > wall_y) {
+  if (falling_puyo.y > wall_y || clashes_with_boundary) {
     // There is a wall in the way. Make this a 180 degree rotation.
     destination_orientation_index =
       (destination_orientation_index + direction) % 4;
