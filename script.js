@@ -301,10 +301,6 @@ const update_control = scene => {
     falling_puyo.y = destination_y;
     game_state_matrix[falling_puyo_column][destination_row] = falling_puyo;
     game_height_map[falling_puyo_column] -= 1;
-    // Check if game is lost.
-    if (game_height_map[game_over_column] <= 0) {
-      // TODO
-    }
     game_state = "FALLING";
     falling_puyo = secondary_puyo;
     falling_puyo_column = secondary_puyo_column;
@@ -320,10 +316,6 @@ const update_control = scene => {
     secondary_puyo.y = destination_y;
     game_state_matrix[secondary_puyo_column][destination_row] = secondary_puyo;
     game_height_map[secondary_puyo_column] -= 1;
-    // Check if game is lost.
-    if (game_height_map[game_over_column] <= 0) {
-      // TODO
-    }
     game_state = "FALLING";
   }
 };
