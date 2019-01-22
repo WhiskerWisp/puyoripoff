@@ -196,7 +196,7 @@ const compute_puyo_rotation_orientation_index = direction => {
   if (falling_puyo.y > wall_y) {
     // There is a wall in the way. Make this a 180 degree rotation.
     destination_orientation_index =
-      (destination_puyo_orientation_index + direction) % 4;
+      (destination_orientation_index + direction) % 4;
 
     destination_orientation_index =
       destination_orientation_index >= 0
