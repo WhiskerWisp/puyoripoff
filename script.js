@@ -266,8 +266,6 @@ const update_control = scene => {
       secondary_puyo_orientation_index,
       falling_puyo.y,
     );
-    // TODO: There is a chance that the rotation can bring the puyo to the
-    // bottom and it might collide with the bottom ground ahead.
   } else if (
     scene.input.keyboard.checkDown(
       rotate_anticlockwise,
